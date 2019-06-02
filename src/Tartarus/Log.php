@@ -32,4 +32,8 @@ final class Log
         return $this->type;
     }
 
+    public function setIpAddress($ipAddress)
+    {
+        $this->ip_address = $ipAddress;
+    }
 }

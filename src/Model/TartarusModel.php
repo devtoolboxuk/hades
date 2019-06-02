@@ -48,6 +48,29 @@ class TartarusModel
         $this->ip_address = $ip_address;
     }
 
+    public function toArray()
+    {
+        return [
+            'ip_address' => $this->getIpAddress(),
+            'block_type' => $this->getBlockType(),
+            'blocked' => $this->isBlocked(),
+            'comment' => $this->getComment(),
+            'updated_at' => $this->getUpdatedAt(),
+        ];
+    }
+
+    public function isBlocked()
+    {
+
+        switch ($this->getBlockType()) {
+            case 'T':
+            case 'B':
+                return true;
+                break;;
+        }
+        return null;
+    }
+
     /**
      * @return int
      */
