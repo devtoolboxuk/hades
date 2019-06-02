@@ -2,19 +2,13 @@
 
 namespace devtoolboxuk\hades\tartarus;
 
-final class Log
+final class TartarusLog
 {
 
     /**
      * @var integer
      */
     private $ip_address;
-
-    /**
-     * @var string
-     */
-    private $type;
-
 
     /**
      * @return int
@@ -25,15 +19,12 @@ final class Log
     }
 
     /**
-     * @return string
+     * @param $ipAddress
      */
-    public function getType()
-    {
-        return $this->type;
-    }
-
     public function setIpAddress($ipAddress)
     {
         $this->ip_address = $ipAddress;
     }
+
+
 }

@@ -2,24 +2,46 @@
 
 namespace devtoolboxuk\hades;
 
-use devtoolboxuk\hades\tartarus\Log;
+use devtoolboxuk\hades\tartarus\TartarusLog;
 use devtoolboxuk\hades\tartarus\TartarusRepository;
 
-class TartarusService
+final class TartarusService extends BaseOptions
 {
+    /**
+     * @var TartarusRepository
+     */
     private $tartarusRepository;
-    private $log;
+
+    /**
+     * @var TartarusLog
+     */
+    private $tartarusLog;
 
     public function __construct(TartarusRepository $tartarusRepository)
     {
         $this->tartarusRepository = $tartarusRepository;
-        $this->log = new Log();
+        $this->tartarusLog = new TartarusLog();
     }
 
+    /**
+     * @param $ip_address
+     * @return mixed
+     */
     public function getTartarus($ip_address)
     {
-        $this->log->setIpAddress($ip_address);
-        return $this->tartarusRepository->checkTartarus($this->log);
+        $this->tartarusLog->setIpAddress($ip_address);
+        return $this->tartarusRepository->checkTartarus($this->tartarusLog);
     }
+
+    /**
+     * @param $ip_address
+     * @return mixed
+     */
+    public function removeTemporaryBan($ip_address)
+    {
+        $this->tartarusLog->setIpAddress($ip_address);
+        return $this->tartarusRepository->removeTemporaryBan($this->tartarusLog);
+    }
+
 
 }

@@ -1,6 +1,8 @@
 <?php
 
-namespace devtoolboxuk\hades\Log;
+namespace devtoolboxuk\hades\Model;
+
+use devtoolboxuk\utilitybundle\UtilityService;
 
 class TartarusModel
 {
@@ -26,18 +28,36 @@ class TartarusModel
     private $updated_at;
 
     /**
+     * @var int
+     */
+    private $ban_period;
+
+    /**
+     * @var null
+     */
+    private $removeBan = null;
+
+    /**
+     * @var UtilityService
+     */
+    private $utilityService;
+
+    /**
      * TartarusModel constructor.
      * @param int $ip_address
      * @param string $blockType
      * @param string $comment
      * @param null $updated_at
+     * @param int $ban_period
      */
-    function __construct($ip_address = 0, $blockType = '', $comment = '', $updated_at = null)
+    function __construct($ip_address = 0, $blockType = '', $comment = '', $updated_at = null, $ban_period = 0)
     {
         $this->ip_address = $ip_address;
         $this->blockType = $blockType;
         $this->comment = $comment;
         $this->updated_at = $updated_at;
+        $this->ban_period = $ban_period;
+        $this->utilityService = new UtilityService();
     }
 
     /**
@@ -48,6 +68,9 @@ class TartarusModel
         $this->ip_address = $ip_address;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return [
@@ -59,12 +82,44 @@ class TartarusModel
         ];
     }
 
+    /**
+     * Confirms if the Ban expired. Only used for temporary bans
+     *
+     * @return bool|null
+     */
+    private function checkIfBanExpired()
+    {
+        $banDate = $this->utilityService->date()->modify(sprintf('-%d seconds', $this->ban_period));
+
+        if ($this->utilityService->date()->datePassed($banDate)) {
+            return true;
+        }
+        return null;
+    }
+
+    /**
+     * @return null
+     */
+    public function removeBan()
+    {
+        return $this->removeBan;
+    }
+
+    /**
+     * @return bool|null
+     */
     public function isBlocked()
     {
-
         switch ($this->getBlockType()) {
-            case 'T':
-            case 'B':
+
+            case 'T'://Temporary Ban
+                if (!$this->checkIfBanExpired()) {
+                    return true;
+                }
+                $this->removeBan = true;
+                break;
+
+            case 'B'://Permanend Ban
                 return true;
                 break;;
         }
@@ -110,6 +165,4 @@ class TartarusModel
     {
         return $this->updated_at;
     }
-
-
 }

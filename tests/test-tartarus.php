@@ -2,6 +2,7 @@
 
 namespace devtoolboxuk\hades;
 
+use devtoolboxuk\utilitybundle\UtilityService;
 use PHPUnit\Framework\TestCase;
 
 class TartarusTest extends TestCase
@@ -15,9 +16,16 @@ class TartarusTest extends TestCase
     function testTarturus()
     {
 
-        $hades = new FirewallService(
-        );
-        $hades->checkTartarus();
+        $utility = new UtilityService();
+
+        echo "\n\nYeterday: ".$yesterday = $utility->date()->modify('-86400 seconds');
+    echo "\n\n";
+    echo "\n\n";
+        if ($utility->date()->datePassed($yesterday))
+        {
+            echo "Date has passed";
+        }
+    echo "\n\n";
     }
 
 }
