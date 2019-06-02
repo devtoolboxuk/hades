@@ -2,7 +2,7 @@
 
 namespace devtoolboxuk\hades;
 
-use devtoolboxuk\hades\repositories\TartarusRepository;
+use devtoolboxuk\hades\tartarus\TartarusRepository;
 
 final class FirewallService
 {
