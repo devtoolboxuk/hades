@@ -25,8 +25,9 @@ final class FirewallService extends AbstractHades
      */
     public function __construct(TartarusRepository $tartarusRepository)
     {
+        parent::__construct();
         $this->tartarusRepository = $tartarusRepository;
-        $this->tartarus = new TartarusService($tartarusRepository);
+        $this->tartarus = new TartarusService($this->tartarusRepository);
     }
 
     private function getTartarus($ip_address)
@@ -39,7 +40,6 @@ final class FirewallService extends AbstractHades
             isset($data['comment']) ? $data['comment'] : '',
             isset($data['updated_at']) ? $data['updated_at'] : null,
             $this->getOption('ban_period')
-
         );
     }
 
@@ -48,10 +48,9 @@ final class FirewallService extends AbstractHades
      * @param string $ipType
      * @return bool|null
      */
-    public function minos($ip_address,$ipType = 'v4')
+    public function minos($ip_address, $ipType = 'v4')
     {
-
-        $ip_address = $this->convertIpAddress($ip_address,$ipType);
+        $ip_address = $this->convertIpAddress($ip_address, $ipType);
 
         $tartarus = $this->getTartarus($ip_address);
 
@@ -75,7 +74,7 @@ final class FirewallService extends AbstractHades
      * @param string $ipType
      * @return string|null
      */
-    private function convertIpAddress($ip_address,$ipType = 'v4')
+    private function convertIpAddress($ip_address, $ipType = 'v4')
     {
         $ip = null;
         switch ($ipType) {

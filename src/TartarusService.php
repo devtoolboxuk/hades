@@ -5,7 +5,7 @@ namespace devtoolboxuk\hades;
 use devtoolboxuk\hades\tartarus\TartarusLog;
 use devtoolboxuk\hades\tartarus\TartarusRepository;
 
-final class TartarusService extends BaseOptions
+final class TartarusService
 {
     /**
      * @var TartarusRepository

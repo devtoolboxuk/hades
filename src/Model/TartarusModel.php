@@ -91,7 +91,7 @@ class TartarusModel
     {
         $banDate = $this->utilityService->date()->modify(sprintf('-%d seconds', $this->ban_period));
 
-        if ($this->utilityService->date()->datePassed($banDate)) {
+        if ($this->utilityService->date()->datePassed($this->getUpdatedAt(), $banDate)) {
             return true;
         }
         return null;

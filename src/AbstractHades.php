@@ -6,7 +6,6 @@ use devtoolboxuk\utilitybundle\UtilityService;
 
 abstract class AbstractHades
 {
-
     /**
      * @var UtilityService
      */
@@ -17,9 +16,13 @@ abstract class AbstractHades
      */
     protected $options = [];
 
-    public function __construct()
+
+    public function __construct($test)
     {
         $this->utilityService = new UtilityService();
+        $baseOptions = new BaseOptions();
+        $options = $baseOptions->getOptions();
+        $this->options = $options['Hades'];
     }
 
     /**
@@ -27,8 +30,6 @@ abstract class AbstractHades
      */
     public function setOptions($options = [])
     {
-        $baseOptions = new BaseOptions();
-        $this->options = $baseOptions->getOptions();
         if (isset($options['Hades'])) {
             $this->options = $this->utilityService->arrays()->arrayMergeRecursiveDistinct($this->options, $options['Hades']);
         }
