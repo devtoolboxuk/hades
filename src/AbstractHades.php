@@ -28,8 +28,9 @@ abstract class AbstractHades
     public function setOptions($options = [])
     {
         $baseOptions = new BaseOptions();
+        $this->options = $baseOptions->getOptions();
         if (isset($options['Hades'])) {
-            $this->options = $this->utilityService->arrays()->arrayMergeRecursiveDistinct($baseOptions->getOptions(), $options['Hades']);
+            $this->options = $this->utilityService->arrays()->arrayMergeRecursiveDistinct($this->options, $options['Hades']);
         }
     }
 
