@@ -30,6 +30,10 @@ final class FirewallService extends AbstractHades
         $this->tartarus = new TartarusService($this->tartarusRepository);
     }
 
+    /**
+     * @param $ip_address
+     * @return TartarusModel
+     */
     private function getTartarus($ip_address)
     {
         $data = $this->tartarus->getTartarus($ip_address);
@@ -51,15 +55,26 @@ final class FirewallService extends AbstractHades
     public function minos($ip_address, $ipType = 'v4')
     {
         $ip_address = $this->convertIpAddress($ip_address, $ipType);
-
         $tartarus = $this->getTartarus($ip_address);
-
-        if ($tartarus->removeBan()) {
-            $this->removeTemporaryBan($ip_address);
-        }
-
-        return $tartarus->isBlocked();
+        return $this->getBlockedStatus($tartarus, $ip_address);
     }
+
+    /**
+     * @param TartarusModel $tartarus
+     * @param int $ip_address
+     * @return bool|null
+     */
+    private function getBlockedStatus(TartarusModel $tartarus, $ip_address = 0)
+    {
+        if (!$tartarus->isBlocked()) {
+            if ($tartarus->removeBan()) {
+                $this->removeTemporaryBan($ip_address);
+            }
+            return null;
+        }
+        return true;
+    }
+
 
     /**
      * @param $ip_address
