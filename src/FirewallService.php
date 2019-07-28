@@ -2,106 +2,29 @@
 
 namespace devtoolboxuk\hades;
 
-use devtoolboxuk\hades\Model\TartarusModel;
+use devtoolboxuk\hades\asphodel\AsphodelService;
+use devtoolboxuk\hades\tartarus\TartarusService;
 use devtoolboxuk\hades\tartarus\TartarusRepository;
-use devtoolboxuk\internetaddress\IP;
-use devtoolboxuk\utilitybundle\UtilityService;
 
-final class FirewallService extends AbstractHades
+
+class FirewallService extends AbstractHades
 {
-    /**
-     * @var TartarusService
-     */
-    private $tartarus;
+    protected $handlers = [];
 
-    /**
-     * @var TartarusRepository
-     */
-    private $tartarusRepository;
 
-    /**
-     * FirewallService constructor.
-     * @param TartarusRepository $tartarusRepository
-     */
-    public function __construct(TartarusRepository $tartarusRepository)
+    public function pushFireWallRepository(TartarusRepository $tartarusRepository)
     {
-        parent::__construct();
-        $this->tartarusRepository = $tartarusRepository;
-        $this->tartarus = new TartarusService($this->tartarusRepository);
-    }
-
-    /**
-     * @param $ip_address
-     * @return TartarusModel
-     */
-    private function getTartarus($ip_address)
-    {
-        $data = $this->tartarus->getTartarus($ip_address);
-
-        return new TartarusModel(
-            isset($data['ip_address']) ? $data['ip_address'] : 0,
-            isset($data['type']) ? $data['type'] : '',
-            isset($data['comment']) ? $data['comment'] : '',
-            isset($data['updated_at']) ? $data['updated_at'] : null,
-            $this->getOption('ban_period')
-        );
-    }
-
-    /**
-     * @param $ip_address
-     * @param string $ipType
-     * @return bool|null
-     */
-    public function minos($ip_address, $ipType = 'v4')
-    {
-        $ip_address = $this->convertIpAddress($ip_address, $ipType);
-        $tartarus = $this->getTartarus($ip_address);
-        return $this->getBlockedStatus($tartarus, $ip_address);
-    }
-
-    /**
-     * @param TartarusModel $tartarus
-     * @param int $ip_address
-     * @return bool|null
-     */
-    private function getBlockedStatus(TartarusModel $tartarus, $ip_address = 0)
-    {
-        if (!$tartarus->isBlocked()) {
-            if ($tartarus->removeBan()) {
-                $this->removeTemporaryBan($ip_address);
-            }
-            return null;
-        }
-        return true;
+        return $this->tartarusService->pushFireWallRepository($tartarusRepository);
     }
 
 
-    /**
-     * @param $ip_address
-     */
-    private function removeTemporaryBan($ip_address)
+    public function isBlocked($ip_address)
     {
-        $this->tartarus->removeTemporaryBan($ip_address);
+        return $this->tartarusService->isBlocked($ip_address);
     }
 
-    /**
-     * @param $ip_address
-     * @param string $ipType
-     * @return string|null
-     */
-    private function convertIpAddress($ip_address, $ipType = 'v4')
+    public function blockIp($ip_address, $type = 'T')
     {
-        $ip = null;
-        switch ($ipType) {
-            case 'v6':
-                //TODO
-                break;
-            case 'v4':
-            default:
-                $ip = IP::parse($ip_address)->toLong();
-                break;
-        }
-
-        return $ip;
+        return $this->tartarusService->blockIp($ip_address, $type);
     }
 }

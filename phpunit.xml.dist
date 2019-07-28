@@ -14,7 +14,7 @@
 
     <testsuites>
         <testsuite name="hades">
-            <directory prefix="test-" suffix=".php">./tests/</directory>
+            <directory prefix="test-integ" suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

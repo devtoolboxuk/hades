@@ -2,27 +2,33 @@
 
 namespace devtoolboxuk\hades;
 
+use devtoolboxuk\hades\asphodel\AsphodelService;
+use devtoolboxuk\hades\tartarus\TartarusService;
+use devtoolboxuk\internetaddress\IP;
 use devtoolboxuk\utilitybundle\UtilityService;
 
 abstract class AbstractHades
 {
-    /**
-     * @var UtilityService
-     */
-    protected $utilityService;
 
-    /**
-     * @var array
-     */
-    protected $options = [];
+    protected $arrayUtility;
 
+    protected $ban_period;
+    protected $options;
+    protected $interval;
+    protected $infractions;
 
-    public function __construct($test)
+    protected $tartarusService;
+    protected $asphodelService;
+
+    public function __construct()
     {
-        $this->utilityService = new UtilityService();
-        $baseOptions = new BaseOptions();
-        $options = $baseOptions->getOptions();
-        $this->options = $options['Hades'];
+        $utilityService = new UtilityService();
+        $this->arrayUtility = $utilityService->arrays();
+
+        $this->setOptions();
+
+        $this->tartarusService = new TartarusService($this->options);
+        $this->asphodelService = new AsphodelService($this->options);
     }
 
     /**
@@ -30,30 +36,32 @@ abstract class AbstractHades
      */
     public function setOptions($options = [])
     {
-        if (isset($options['Hades'])) {
-            $this->options = $this->utilityService->arrays()->arrayMergeRecursiveDistinct($this->options, $options['Hades']);
-        }
+        $baseOptions = new BaseOptions();
+        $this->options = (isset($this->options['Hades'])) ? $this->arrayUtility->arrayMergeRecursiveDistinct($baseOptions->getOptions(), $options) : $baseOptions->getOptions();
+
+        $this->ban_period = (isset($this->options['Hades'])) ? $this->options['Hades']['ban_period'] : null;
+        $this->interval = (isset($this->options['Hades'])) ? $this->options['Hades']['interval'] : null;
+        $this->infractions = (isset($this->options['Hades'])) ? $this->options['Hades']['infractions'] : null;
     }
 
-    /**
-     * @param $name
-     * @return |null
-     */
-    protected function getOption($name)
+
+    protected function convertIpAddressToLong($ip_address)
     {
-        if (!$this->hasOption($name)) {
-            return null;
-        }
-        return $this->options[$name];
+        return IP::parse($ip_address)->toLong();
     }
 
-    /**
-     * @param $name
-     * @return bool
-     */
-    private function hasOption($name)
+    protected function getBanPeriod()
     {
-        return isset($this->options[$name]);
+        return $this->ban_period;
     }
 
+    protected function getInterval()
+    {
+        return $this->interval;
+    }
+
+    protected function getInfractions()
+    {
+        return $this->infractions;
+    }
 }

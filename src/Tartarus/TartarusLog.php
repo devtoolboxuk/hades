@@ -26,5 +26,4 @@ final class TartarusLog
         $this->ip_address = $ipAddress;
     }
 
-
 }

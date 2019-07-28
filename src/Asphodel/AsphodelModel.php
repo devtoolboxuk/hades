@@ -1,10 +1,10 @@
 <?php
 
-namespace devtoolboxuk\hades\Model;
+namespace devtoolboxuk\hades\asphodel;
 
 use devtoolboxuk\utilitybundle\UtilityService;
 
-class TartarusModel
+class AsphodelModel
 {
 
     /**
