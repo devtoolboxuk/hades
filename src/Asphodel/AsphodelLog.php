@@ -6,10 +6,12 @@ final class AsphodelLog
 {
 
     private $ip_address;
+    private $score;
     private $type;
     private $date;
     private $reference;
     private $comment;
+    private $created;
 
     /**
      * @return int
@@ -19,6 +21,33 @@ final class AsphodelLog
         return $this->ip_address;
     }
 
+    public function setLog(AsphodelModel $model)
+    {
+        $this->ip_address = $model->getIpAddress();
+        $this->score = $model->getScore();
+        $this->reference = $model->getReference();
+        $this->type = $model->getType();
+        $this->comment = $model->getComment();
+    }
+
+    public function setInfraction(AsphodelModel $model)
+    {
+        $this->ip_address = $model->getIpAddress();
+        $this->created = $model->getCreated();
+    }
+
+
+    public function toArray()
+    {
+        return [
+            'ip_address'=>$this->getIpAddress(),
+            'score'=>$this->getScore(),
+            'reference'=>$this->getReference(),
+            'type'=>$this->getType(),
+            'comment'=>$this->getComment(),
+            'created'=>$this->getCreated(),
+        ];
+    }
     /**
      * @param $ipAddress
      */
@@ -39,7 +68,7 @@ final class AsphodelLog
 
     public function getComment()
     {
-        return $this->comment;
+        return ($this->comment) ? $this->comment : null;
     }
 
     public function setComment($comment)
@@ -52,9 +81,24 @@ final class AsphodelLog
         return $this->type;
     }
 
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    public function setScore($score)
+    {
+        $this->score = $score;
     }
 
     public function getReference()

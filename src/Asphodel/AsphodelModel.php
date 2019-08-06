@@ -7,35 +7,12 @@ use devtoolboxuk\utilitybundle\UtilityService;
 class AsphodelModel
 {
 
-    /**
-     * @var integer
-     */
     private $ip_address;
-
-    /**
-     * @var string
-     */
-    private $blockType;
-
-    /**
-     * @var string
-     */
+    private $score;
+    private $reference;
+    private $type;
     private $comment;
-
-    /**
-     * @var \DateTime|null
-     */
-    private $updated_at;
-
-    /**
-     * @var int
-     */
-    private $ban_period;
-
-    /**
-     * @var null
-     */
-    private $removeBan = null;
+    private $created;
 
     /**
      * @var UtilityService
@@ -43,29 +20,24 @@ class AsphodelModel
     private $utilityService;
 
     /**
-     * TartarusModel constructor.
+     * AsphodelModel constructor.
      * @param int $ip_address
-     * @param string $blockType
+     * @param int $score
+     * @param string $reference
+     * @param string $type
      * @param string $comment
      * @param null $updated_at
-     * @param int $ban_period
      */
-    function __construct($ip_address = 0, $blockType = '', $comment = '', $updated_at = null, $ban_period = 0)
+    function __construct($ip_address = 0, $score = 0, $reference = '', $type = '', $comment = '', $created = null)
     {
-        $this->ip_address = $ip_address;
-        $this->blockType = $blockType;
-        $this->comment = $comment;
-        $this->updated_at = $updated_at;
-        $this->ban_period = $ban_period;
-        $this->utilityService = new UtilityService();
-    }
 
-    /**
-     * @param $ip_address
-     */
-    public function setIpAddress($ip_address)
-    {
         $this->ip_address = $ip_address;
+        $this->score = $score;
+        $this->reference = $reference;
+        $this->type = $type;
+        $this->comment = $comment;
+        $this->created = $created;
+        $this->utilityService = new UtilityService();
     }
 
     /**
@@ -75,55 +47,12 @@ class AsphodelModel
     {
         return [
             'ip_address' => $this->getIpAddress(),
-            'block_type' => $this->getBlockType(),
-            'blocked' => $this->isBlocked(),
+            'score' => $this->getScore(),
+            'reference' => $this->getReference(),
+            'type' => $this->getType(),
             'comment' => $this->getComment(),
-            'updated_at' => $this->getUpdatedAt(),
+            'created' => $this->getCreated(),
         ];
-    }
-
-    /**
-     * Confirms if the Ban expired. Only used for temporary bans
-     *
-     * @return bool|null
-     */
-    private function checkIfBanExpired()
-    {
-        $banDate = $this->utilityService->date()->modify(sprintf('-%d seconds', $this->ban_period));
-
-        if ($this->utilityService->date()->datePassed($this->getUpdatedAt(), $banDate)) {
-            return true;
-        }
-        return null;
-    }
-
-    /**
-     * @return null
-     */
-    public function removeBan()
-    {
-        return $this->removeBan;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function isBlocked()
-    {
-        switch ($this->getBlockType()) {
-
-            case 'T'://Temporary Ban
-                if (!$this->checkIfBanExpired()) {
-                    return true;
-                }
-                $this->removeBan = true;
-                break;
-
-            case 'B'://Permanend Ban
-                return true;
-                break;;
-        }
-        return null;
     }
 
     /**
@@ -134,20 +63,22 @@ class AsphodelModel
         return $this->ip_address;
     }
 
-    /**
-     * @param $blockType
-     */
-    public function setBlockType($blockType)
+    public function getScore()
     {
-        $this->blockType = $blockType;
+        return $this->score;
+    }
+
+    public function getReference()
+    {
+        return $this->reference;
     }
 
     /**
      * @return string
      */
-    public function getBlockType()
+    public function getType()
     {
-        return $this->blockType;
+        return $this->type;
     }
 
     /**
@@ -161,8 +92,9 @@ class AsphodelModel
     /**
      * @return \DateTime|null
      */
-    public function getUpdatedAt()
+    public function getCreated()
     {
-        return $this->updated_at;
+        return $this->created;
     }
+
 }

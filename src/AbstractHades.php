@@ -10,16 +10,17 @@ use devtoolboxuk\utilitybundle\UtilityService;
 abstract class AbstractHades
 {
 
-    protected $arrayUtility;
+    private $arrayUtility;
 
     protected $ban_period;
     protected $options;
     protected $interval;
-    protected $infractions;
+    protected $infractions = [];
+    protected $ban = 1;
+    protected $ban_type = 1;
 
     protected $tartarusService;
     protected $asphodelService;
-
     public function __construct()
     {
         $utilityService = new UtilityService();
@@ -33,6 +34,7 @@ abstract class AbstractHades
 
     /**
      * @param array $options
+     * @return $this
      */
     public function setOptions($options = [])
     {
@@ -42,6 +44,9 @@ abstract class AbstractHades
         $this->ban_period = (isset($this->options['Hades'])) ? $this->options['Hades']['ban_period'] : null;
         $this->interval = (isset($this->options['Hades'])) ? $this->options['Hades']['interval'] : null;
         $this->infractions = (isset($this->options['Hades'])) ? $this->options['Hades']['infractions'] : null;
+        $this->ban = (isset($this->options['Hades'])) ? $this->options['Hades']['ban'] : null;
+        $this->ban_type = (isset($this->options['Hades'])) ? $this->options['Hades']['type'] : null;
+        return $this;
     }
 
 

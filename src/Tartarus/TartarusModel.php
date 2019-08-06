@@ -25,7 +25,7 @@ class TartarusModel
     /**
      * @var \DateTime|null
      */
-    private $updated_at;
+    private $created;
 
     /**
      * @var int
@@ -50,12 +50,12 @@ class TartarusModel
      * @param null $updated_at
      * @param int $ban_period
      */
-    function __construct($ip_address = 0, $blockType = '', $comment = '', $updated_at = null, $ban_period = 0)
+    function __construct($ip_address = 0, $blockType = '', $comment = '', $created = null, $ban_period = 0)
     {
         $this->ip_address = $ip_address;
         $this->blockType = $blockType;
         $this->comment = $comment;
-        $this->updated_at = $updated_at;
+        $this->created = $created;
         $this->ban_period = $ban_period;
         $this->utilityService = new UtilityService();
     }
@@ -78,7 +78,7 @@ class TartarusModel
             'block_type' => $this->getBlockType(),
             'blocked' => $this->isBlocked(),
             'comment' => $this->getComment(),
-            'updated_at' => $this->getUpdatedAt(),
+            'created' => $this->getCreated(),
         ];
     }
 
@@ -91,7 +91,7 @@ class TartarusModel
     {
         $banDate = $this->utilityService->date()->modify(sprintf('-%d seconds', $this->ban_period));
 
-        if ($this->utilityService->date()->datePassed($this->getUpdatedAt(), $banDate)) {
+        if ($this->utilityService->date()->datePassed($this->getCreated(), $banDate)) {
             return true;
         }
         return null;
@@ -161,8 +161,8 @@ class TartarusModel
     /**
      * @return \DateTime|null
      */
-    public function getUpdatedAt()
+    public function getCreated()
     {
-        return $this->updated_at;
+        return $this->created;
     }
 }

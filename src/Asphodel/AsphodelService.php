@@ -3,6 +3,7 @@
 namespace devtoolboxuk\hades\asphodel;
 
 use devtoolboxuk\hades\AbstractHades;
+use devtoolboxuk\utilitybundle\UtilityService;
 
 class AsphodelService extends AbstractHades
 {
@@ -10,11 +11,15 @@ class AsphodelService extends AbstractHades
     protected $asphodelMeadowRepositories = [];
 
     private $asphodelLog;
+    private $utilityService;
+
 
     public function __construct($options = [])
     {
         $this->setOptions($options);
         $this->asphodelLog = new AsphodelLog();
+        $this->utilityService = new UtilityService();
+        $this->infractions = [];
     }
 
     public function pushLogRepository(AsphodelRepository $tartarusRepository)
@@ -23,31 +28,96 @@ class AsphodelService extends AbstractHades
         return $this;
     }
 
-    public function addLog($ip_address, $type = 'T')
+    public function addToLog($ip_address = '', $score = 0, $reference = '', $type = '', $comment = '')
     {
-        $this->asphodelLog->setIpAddress($this->convertIpAddressToLong($ip_address));
+        $this->asphodelLog->setLog(new AsphodelModel(
+            $this->convertIpAddressToLong($ip_address),
+            $score,
+            $reference,
+            $type,
+            $comment
+        ));
+
+        foreach ($this->asphodelMeadowRepositories as $asphodelMeadowRepository) {
+            $asphodelMeadowRepository->addToLog($this->asphodelLog);
+        }
     }
 
-    public function countInfractions($ip_address,$type)
+    public function checkInfractions($ip_address, $type = '')
     {
-        $this->asphodelLog->setIpAddress($this->convertIpAddressToLong($ip_address));
+        $checkDate = $this->utilityService->date()->modify(sprintf('-%d seconds', $this->interval));
+
+        $this->asphodelLog->setInfraction(new AsphodelModel(
+            $this->convertIpAddressToLong($ip_address),
+            0,
+            '',
+            $type,
+            '',
+            $checkDate
+        ));
 
         foreach ($this->asphodelMeadowRepositories as $asphodelMeadowRepository) {
 
-            $data = $asphodelMeadowRepository->checkTartarus($this->asphodelLog);
+            $data = $asphodelMeadowRepository->getInfractions($this->asphodelLog);
 
-            $asphodel = new AsphodelModel(
-                isset($data['ip_address']) ? $data['ip_address'] : 0,
-                isset($data['type']) ? $data['type'] : '',
-                isset($data['comment']) ? $data['comment'] : '',
-                isset($data['updated_at']) ? $data['updated_at'] : null
-            );
-
-            if ($this->getBlockedStatus($asphodel)) {
-                return true;
+            if ($type != '') {
+                $this->infractions[$ip_address][$type] = $data;
+            } else {
+                $this->infractions[$ip_address] = $data;
             }
+
+
         }
-        return false;
     }
+
+    public function countInfractions($ip_address, $type = '')
+    {
+        $none = 0;
+
+        switch ($type) {
+            case '':
+                if (isset($this->infractions[$ip_address]) && isset($this->infractions[$ip_address])) {
+                    return count($this->infractions[$ip_address]);
+                }
+                return $none;
+                break;
+            default:
+                if (isset($this->infractions[$ip_address]) && isset($this->infractions[$ip_address][$type])) {
+                    return count($this->infractions[$ip_address][$type]);
+                }
+                return $none;
+                break;
+        }
+    }
+
+
+    public function getInfractionsScore($ip_address, $type = '')
+    {
+        $score = 0;
+
+        switch ($type) {
+            case '':
+                if (isset($this->infractions[$ip_address]) && isset($this->infractions[$ip_address])) {
+                    $score = $this->loopInfractions($score, $this->infractions[$ip_address]);
+                }
+                return $score;
+                break;
+            default:
+                if (isset($this->infractions[$ip_address]) && isset($this->infractions[$ip_address][$type])) {
+                    $score = $this->loopInfractions($score, $this->infractions[$ip_address][$type]);
+                }
+                return $score;
+                break;
+        }
+    }
+
+    private function loopInfractions($score, $infractions)
+    {
+        foreach ($infractions as $infraction) {
+            $score += $infraction['score'];
+        }
+        return $score;
+    }
+
 
 }

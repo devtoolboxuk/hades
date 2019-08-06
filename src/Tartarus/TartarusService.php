@@ -39,7 +39,7 @@ class TartarusService extends AbstractHades
                 isset($data['ip_address']) ? $data['ip_address'] : 0,
                 isset($data['type']) ? $data['type'] : '',
                 isset($data['comment']) ? $data['comment'] : '',
-                isset($data['updated_at']) ? $data['updated_at'] : null,
+                isset($data['created']) ? $data['created'] : null,
                 $this->getBanPeriod()
             );
 

@@ -2,22 +2,50 @@ CREATE TABLE `tartarus` (
 `ip_address` bigint(20) NOT NULL,
 `type` enum('W','B','T') NOT NULL DEFAULT 'T',
 `comment` varchar(255) DEFAULT NULL,
-`updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+`created` datetime NOT NULL DEFAULT current_timestamp(),
 KEY `idx_ip_address` (`ip_address`),
-KEY `idx_updated` (`updated_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+KEY `idx_created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+PARTITION BY RANGE (MONTH(created)) (
+PARTITION january VALUES LESS THAN (2),
+PARTITION february VALUES LESS THAN (3),
+PARTITION march VALUES LESS THAN (4),
+PARTITION april VALUES LESS THAN (5),
+PARTITION may VALUES LESS THAN (6),
+PARTITION june VALUES LESS THAN (7),
+PARTITION july VALUES LESS THAN (8),
+PARTITION august VALUES LESS THAN (9),
+PARTITION september VALUES LESS THAN (10),
+PARTITION october VALUES LESS THAN (11),
+PARTITION november VALUES LESS THAN (12),
+PARTITION december VALUES LESS THAN (MAXVALUE)
+);
 
+DROP TABLE IF EXISTS hades_log;
 CREATE TABLE `hades_log` (
 `ip_address` bigint(20) NOT NULL,
 `score` int(20) NOT NULL,
-`reference` TEXT COLLATE utf8_general_ci DEFAULT NULL,
+`reference` BLOB DEFAULT NULL,
 `type` varchar(255) NOT NULL,
-`comment` TEXT COLLATE utf8_general_ci DEFAULT NULL,
-`updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+`comment` text DEFAULT NULL,
+`created` datetime NOT NULL DEFAULT current_timestamp(),
 KEY `idx_ip_address` (`ip_address`),
-KEY `idx_updated` (`updated_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+KEY `idx_created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+PARTITION BY RANGE (MONTH(created)) (
+PARTITION january VALUES LESS THAN (2),
+PARTITION february VALUES LESS THAN (3),
+PARTITION march VALUES LESS THAN (4),
+PARTITION april VALUES LESS THAN (5),
+PARTITION may VALUES LESS THAN (6),
+PARTITION june VALUES LESS THAN (7),
+PARTITION july VALUES LESS THAN (8),
+PARTITION august VALUES LESS THAN (9),
+PARTITION september VALUES LESS THAN (10),
+PARTITION october VALUES LESS THAN (11),
+PARTITION november VALUES LESS THAN (12),
+PARTITION december VALUES LESS THAN (MAXVALUE)
+);
 
 
 
