@@ -14,40 +14,46 @@ class SqlLogRepository extends Repository implements AsphodelRepository
         $this->setConnection();
     }
 
-    public function addLog(AsphodelLog $log)
+    public function addToLog(AsphodelLog $log)
     {
+
         $queryBuilder = $this->getConn()->createQueryBuilder();
         $queryBuilder
-            ->insert('tartarus')
-
-            ->setParameters([
-                'ip_address', $log->getIpAddress(), Type::INTEGER,
-                'reference', $log->getReference(), Type::STRING,
-                'type', $log->getType(), Type::STRING,
-                'comment', $log->getComment(), Type::STRING,
+            ->insert('hades_log')
+            ->values([
+                'ip_address'=>':ip_address',
+                'score'=>':score',
+                'reference'=>':reference',
+                'type'=>':type',
+                'comment'=>':comment'
             ])
+
+            ->setParameter('ip_address', $log->getIpAddress(), Type::INTEGER)
+            ->setParameter('score', $log->getScore(), Type::INTEGER)
+            ->setParameter('reference', $log->getReference(), Type::STRING)
+            ->setParameter('type', $log->getType(), Type::STRING)
+            ->setParameter('comment', $log->getComment(), Type::STRING)
             ->execute();
     }
 
-    public function countInfractions(AsphodelLog $log)
+    public function getInfractions(AsphodelLog $log)
     {
 
         $query = $this->getConn()->createQueryBuilder()
             ->select(
-                'ip_address',
                 'score',
                 'type'
             )
             ->from('hades_log')
             ->Where('ip_address = :ip_address')
-            ->Where('updated_at > :date')
+            ->andWhere('created > :date')
             ->setParameter('ip_address', $log->getIpAddress(), Type::INTEGER)
-            ->setParameter('date', $log->getDate(), Type::DATETIME)
+            ->setParameter('date', $log->getCreated())
             ->execute();
 
         $log = [];
         while ($data = $query->fetch()) {
-            $log = $data;
+            $log[] = $data;
         }
 
         return $log;

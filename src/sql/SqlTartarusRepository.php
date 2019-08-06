@@ -22,7 +22,7 @@ class SqlTartarusRepository extends Repository implements dtbTartarusRepository
                 'ip_address',
                 'type',
                 'comment',
-                'updated_at'
+                'created'
             )
             ->from('tartarus')
             ->Where('ip_address = :ip_address')
